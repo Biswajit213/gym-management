@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - Gym Management System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="admin-dashboard">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GymPro</span>
+        </div>
+        <div class="nav-menu">
+            <a href="#" class="nav-link active" onclick="showSection('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+            <a href="#" class="nav-link" onclick="showSection('profile')">
+                <i class="fas fa-user"></i>
+                Profile
+            </a>
+            <a href="#" class="nav-link" onclick="showSection('bills')">
+                <i class="fas fa-file-invoice"></i>
+                Bills
+            </a>
+            <a href="#" class="nav-link" onclick="showSection('receipts')">
+                <i class="fas fa-receipt"></i>
+                Receipts
+            </a>
+            <a href="#" class="nav-link" onclick="showSection('membership')">
+                <i class="fas fa-id-card"></i>
+                Membership
+            </a>
+        </div>
+        <div class="nav-user">
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <small id="userEmail">loading@email.com</small>
+            </div>
+            <button class="btn btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="content-section active">
+            <div class="section-header">
+                <h1>Welcome Back!</h1>
+                <p>Here's your gym activity overview</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="membershipStatus">Active</h3>
+                        <p>Membership Status</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="currentBill">$0</h3>
+                        <p>Current Bill</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalReceipts">0</h3>
+                        <p>Total Receipts</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="joinDate">Loading...</h3>
+                        <p>Member Since</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>Recent Bills</h3>
+                    <div id="recentBills" class="list-container">
+                        <p class="loading">Loading bills...</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h3>Recent Receipts</h3>
+                    <div id="recentReceipts" class="list-container">
+                        <p class="loading">Loading receipts...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile-section" class="content-section">
+            <div class="section-header">
+                <h1>My Profile</h1>
+                <p>Manage your personal information</p>
+            </div>
+            
+            <div class="profile-container">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profileName">Loading...</h2>
+                            <p id="profileEmail">loading@email.com</p>
+                        </div>
+                    </div>
+                    
+                    <form id="profileForm" class="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profileFirstName">First Name</label>
+                                <input type="text" id="profileFirstName" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileLastName">Last Name</label>
+                                <input type="text" id="profileLastName" name="lastName" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profilePhone">Phone Number</label>
+                                <input type="tel" id="profilePhone" name="phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileAddress">Address</label>
+                                <input type="text" id="profileAddress" name="address" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="profileEmergencyContact">Emergency Contact</label>
+                            <input type="text" id="profileEmergencyContact" name="emergencyContact">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Update Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bills Section -->
+        <section id="bills-section" class="content-section">
+            <div class="section-header">
+                <h1>My Bills</h1>
+                <p>View and manage your billing information</p>
+            </div>
+            
+            <div class="bills-container">
+                <div class="bills-filters">
+                    <div class="filter-group">
+                        <label for="billStatusFilter">Status:</label>
+                        <select id="billStatusFilter" onchange="filterBills()">
+                            <option value="">All Bills</option>
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="billsList" class="bills-list">
+                    <p class="loading">Loading bills...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Receipts Section -->
+        <section id="receipts-section" class="content-section">
+            <div class="section-header">
+                <h1>My Receipts</h1>
+                <p>Download and view your payment receipts</p>
+            </div>
+            
+            <div class="receipts-container">
+                <div id="receiptsList" class="receipts-list">
+                    <p class="loading">Loading receipts...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Membership Section -->
+        <section id="membership-section" class="content-section">
+            <div class="section-header">
+                <h1>Membership Details</h1>
+                <p>Your gym membership information</p>
+            </div>
+            
+            <div class="membership-container">
+                <div class="membership-card">
+                    <div class="membership-header">
+                        <h2>Membership Status</h2>
+                        <span id="membershipStatusBadge" class="status-badge active">Active</span>
+                    </div>
+                    
+                    <div class="membership-details">
+                        <div class="detail-item">
+                            <label>Member ID:</label>
+                            <span id="memberId">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Membership Type:</label>
+                            <span id="membershipType">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Join Date:</label>
+                            <span id="membershipJoinDate">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Expiry Date:</label>
+                            <span id="membershipExpiryDate">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Monthly Fee:</label>
+                            <span id="membershipFee">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics-compat.js"></script>
+    
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/logging.js"></script>
+    <script src="../js/firebase-services.js"></script>
+    <script src="../js/auth-manager.js"></script>
+    <script src="../js/payment-service.js"></script>
+    <script src="../js/notification-service.js"></script>
+    <script src="../js/member.js"></script>
+    
+    <script>
+        // Navigation functions
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.add('active');
+            
+            // Add active class to clicked nav link
+            event.target.classList.add('active');
+        }
+        
+        // Logout function
+        async function logout() {
+            try {
+                await window.memberManager.logout();
+                window.location.href = '/member/login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+        
+        // Filter bills function
+        function filterBills() {
+            const statusFilter = document.getElementById('billStatusFilter').value;
+            // Implementation will be added when bills are loaded
+        }
+    </script>
+</body>
+</html> 

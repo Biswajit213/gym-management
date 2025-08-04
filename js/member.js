@@ -290,9 +290,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const rememberMe = formData.get('rememberMe') === 'on';
             
             try {
-                await window.authManager.login(email, password, rememberMe);
+                const user = await window.authManager.signIn(email, password, rememberMe);
+                const userRole = await window.authManager.getUserRole();
+                if (userRole === 'member') {
+                    await logMemberAction('MEMBER_LOGIN_SUCCESS', { email: email, timestamp: new Date().toISOString() });
+                    window.location.href = '/member/dashboard.html';
+                } else {
+                    await window.authManager.signOut();
+                    utils.domUtils.showAlert('Access denied. Member privileges required.', 'error');
+                    await logError('MEMBER_LOGIN_DENIED', { email: email, reason: 'Non-member user attempted member login' });
+                }
             } catch (error) {
-                // Error is already handled in login method
+                console.error('Member login error:', error);
+                utils.domUtils.showAlert('An error occurred during login. Please try again.', 'error');
+                await logError('MEMBER_LOGIN_ERROR', error);
             }
         });
     }
@@ -324,6 +335,34 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Global functions for member login page
+window.togglePassword = function() {
+    const passwordInput = document.getElementById('password');
+    const toggleButton = document.querySelector('.password-toggle i');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleButton.className = 'fas fa-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        toggleButton.className = 'fas fa-eye';
+    }
+};
+
+window.showForgotPassword = function() {
+    const modal = document.getElementById('forgotPasswordModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+};
+
+window.closeForgotPassword = function() {
+    const modal = document.getElementById('forgotPasswordModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+};
 
 // Export member manager for use in other modules
 window.memberManager = memberManager; 

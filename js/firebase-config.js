@@ -159,6 +159,9 @@ async function initializeDefaultAdmin() {
             const userCredential = await auth.createUserWithEmailAndPassword(adminEmail, adminPassword);
             const adminUser = userCredential.user;
             
+            // Send email verification
+            await adminUser.sendEmailVerification();
+            
             // Add admin user to Firestore
             await db.collection(collections.USERS).doc(adminUser.uid).set({
                 email: adminEmail,
@@ -167,7 +170,8 @@ async function initializeDefaultAdmin() {
                 phone: '+1234567890',
                 joinDate: new Date(),
                 isActive: true,
-                permissions: ['all']
+                permissions: ['all'],
+                emailVerified: false
             });
             
             console.log('Default admin user created');
@@ -186,14 +190,77 @@ async function initializeDefaultAdmin() {
     }
 }
 
+// Initialize default member user if not exists
+async function initializeDefaultMember() {
+    try {
+        const memberEmail = 'member@gym.com';
+        const memberPassword = 'member123';
+        
+        // Check if member user exists
+        const memberQuery = await db.collection(collections.USERS)
+            .where('email', '==', memberEmail)
+            .where('role', '==', 'member')
+            .get();
+        
+        if (memberQuery.empty) {
+            // Create member user
+            const userCredential = await auth.createUserWithEmailAndPassword(memberEmail, memberPassword);
+            const memberUser = userCredential.user;
+            
+            // Send email verification
+            await memberUser.sendEmailVerification();
+            
+            // Add member user to Firestore
+            await db.collection(collections.USERS).doc(memberUser.uid).set({
+                email: memberEmail,
+                role: 'member',
+                name: 'John Doe',
+                phone: '+1987654321',
+                joinDate: new Date(),
+                isActive: true,
+                membershipType: 'Basic',
+                monthlyFee: 50,
+                emailVerified: false
+            });
+            
+            // Add member to members collection
+            await db.collection(collections.MEMBERS).doc(memberUser.uid).set({
+                email: memberEmail,
+                name: 'John Doe',
+                phone: '+1987654321',
+                joinDate: new Date(),
+                membershipType: 'Basic',
+                monthlyFee: 50,
+                isActive: true,
+                emergencyContact: 'Jane Doe',
+                address: '123 Main St, City, State'
+            });
+            
+            console.log('Default member user created');
+            logAction('MEMBER_CREATED', memberUser.uid, {
+                email: memberEmail,
+                timestamp: new Date().toISOString()
+            });
+        }
+    } catch (error) {
+        console.error('Error initializing default member:', error);
+        logAction('ERROR', 'system', {
+            action: 'initializeDefaultMember',
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+}
+
 // Initialize system on page load
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Firebase initialized successfully');
     
-    // Initialize default admin (only on first load)
-    if (!localStorage.getItem('adminInitialized')) {
+    // Initialize default users (only on first load)
+    if (!localStorage.getItem('usersInitialized')) {
         initializeDefaultAdmin();
-        localStorage.setItem('adminInitialized', 'true');
+        initializeDefaultMember();
+        localStorage.setItem('usersInitialized', 'true');
     }
 });
 

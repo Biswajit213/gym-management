@@ -190,11 +190,32 @@ class AuthManager {
             const userCredential = await this.auth.signInWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
-            // Check if email is verified
+            // Check if email is verified (allow admin users to bypass this for development)
             if (!user.emailVerified) {
-                utils.domUtils.showAlert('Please verify your email address before signing in.', 'warning');
-                await this.auth.signOut();
-                throw new Error('Email not verified');
+                // Check if user is admin by querying Firestore directly
+                try {
+                    const userDoc = await this.db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        if (userData.role === 'admin') {
+                            // Allow admin users to bypass email verification for development
+                            console.log('Admin user bypassing email verification');
+                        } else {
+                            utils.domUtils.showAlert('Please verify your email address before signing in.', 'warning');
+                            await this.auth.signOut();
+                            throw new Error('Email not verified');
+                        }
+                    } else {
+                        utils.domUtils.showAlert('Please verify your email address before signing in.', 'warning');
+                        await this.auth.signOut();
+                        throw new Error('Email not verified');
+                    }
+                } catch (error) {
+                    console.error('Error checking user role:', error);
+                    utils.domUtils.showAlert('Please verify your email address before signing in.', 'warning');
+                    await this.auth.signOut();
+                    throw new Error('Email not verified');
+                }
             }
 
             // Update last login

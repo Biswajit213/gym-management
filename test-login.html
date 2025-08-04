@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Test - Gym Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+        }
+        .test-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        .test-credentials {
+            background: var(--light-surface);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .test-credentials h4 {
+            color: var(--success-color);
+            margin-bottom: 10px;
+        }
+        .test-credentials p {
+            margin: 5px 0;
+            font-family: monospace;
+        }
+        .test-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .test-links a {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .test-links a:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-online {
+            background: var(--success-color);
+        }
+        .status-offline {
+            background: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-card">
+            <h1><i class="fas fa-cogs"></i> Login Test Page</h1>
+            <p>This page helps you test the login functionality for the Gym Management System.</p>
+        </div>
+
+        <div class="test-card">
+            <div class="test-section">
+                <h2><i class="fas fa-server"></i> Server Status</h2>
+                <p>
+                    <span class="status-indicator status-online"></span>
+                    <strong>Server:</strong> Running on http://localhost:8000
+                </p>
+                <p>
+                    <span class="status-indicator status-online"></span>
+                    <strong>Firebase:</strong> Connected to gym-management-95df3
+                </p>
+            </div>
+
+            <div class="test-section">
+                <h2><i class="fas fa-user-shield"></i> Admin Login Test</h2>
+                <div class="test-credentials">
+                    <h4>Admin Credentials:</h4>
+                    <p><strong>Email:</strong> admin@gym.com</p>
+                    <p><strong>Password:</strong> admin123</p>
+                </div>
+                <div class="test-links">
+                    <a href="/admin/login.html" target="_blank">
+                        <i class="fas fa-sign-in-alt"></i> Test Admin Login
+                    </a>
+                    <a href="/admin/dashboard.html" target="_blank">
+                        <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2><i class="fas fa-user"></i> Member Login Test</h2>
+                <div class="test-credentials">
+                    <h4>Member Credentials:</h4>
+                    <p><strong>Email:</strong> member@gym.com</p>
+                    <p><strong>Password:</strong> member123</p>
+                </div>
+                <div class="test-links">
+                    <a href="/member/login.html" target="_blank">
+                        <i class="fas fa-sign-in-alt"></i> Test Member Login
+                    </a>
+                    <a href="/member/dashboard.html" target="_blank">
+                        <i class="fas fa-tachometer-alt"></i> Member Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2><i class="fas fa-info-circle"></i> Test Instructions</h2>
+                <ol>
+                    <li>Click on "Test Admin Login" to open the admin login page</li>
+                    <li>Use the admin credentials: admin@gym.com / admin123</li>
+                    <li>After successful login, you should be redirected to the admin dashboard</li>
+                    <li>Repeat the same process for member login using member@gym.com / member123</li>
+                    <li>Check the browser console for any error messages</li>
+                </ol>
+            </div>
+
+            <div class="test-section">
+                <h2><i class="fas fa-bug"></i> Troubleshooting</h2>
+                <ul>
+                    <li><strong>If login fails:</strong> Check browser console for Firebase errors</li>
+                    <li><strong>If users don't exist:</strong> Refresh the page to trigger user creation</li>
+                    <li><strong>If email verification fails:</strong> Admin users can bypass email verification for development</li>
+                    <li><strong>If redirect doesn't work:</strong> Check if dashboard pages exist</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <h2><i class="fas fa-code"></i> Technical Details</h2>
+            <div class="test-credentials">
+                <h4>Files Modified:</h4>
+                <ul>
+                    <li>js/firebase-config.js - Added default users</li>
+                    <li>js/auth-manager.js - Fixed email verification bypass for admins</li>
+                    <li>js/admin.js - Added login form handling</li>
+                    <li>js/member.js - Fixed login method calls</li>
+                    <li>admin/login.html - Updated script references</li>
+                    <li>member/login.html - Updated script references</li>
+                    <li>member/dashboard.html - Created new member dashboard</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics-compat.js"></script>
+    
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/logging.js"></script>
+    <script src="js/firebase-services.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script src="js/payment-service.js"></script>
+    <script src="js/notification-service.js"></script>
+    
+    <script>
+        // Test Firebase connection
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                console.log('Testing Firebase connection...');
+                
+                // Test if Firebase is initialized
+                if (window.firebase && window.firebase.auth) {
+                    console.log('✅ Firebase Auth initialized');
+                } else {
+                    console.log('❌ Firebase Auth not initialized');
+                }
+                
+                if (window.firebase && window.firebase.db) {
+                    console.log('✅ Firebase Firestore initialized');
+                } else {
+                    console.log('❌ Firebase Firestore not initialized');
+                }
+                
+                // Test if AuthManager is available
+                if (window.authManager) {
+                    console.log('✅ AuthManager initialized');
+                } else {
+                    console.log('❌ AuthManager not initialized');
+                }
+                
+                console.log('Firebase test completed');
+                
+            } catch (error) {
+                console.error('Firebase test error:', error);
+            }
+        });
+    </script>
+</body>
+</html> 

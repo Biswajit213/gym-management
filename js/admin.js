@@ -11,6 +11,12 @@ class AdminManager {
     // Initialize admin functionality
     async init() {
         try {
+            // Check if we're on the login page
+            if (window.location.pathname.includes('login.html')) {
+                this.setupLoginForm();
+                return;
+            }
+
             // Check authentication
             if (!window.authManager || !window.authManager.isAuthenticated) {
                 window.location.href = '/admin/login.html';
@@ -41,6 +47,140 @@ class AdminManager {
         } catch (error) {
             console.error('Error initializing admin:', error);
             await logError('ADMIN_INIT_ERROR', error);
+        }
+    }
+
+    // Setup login form
+    setupLoginForm() {
+        const loginForm = document.getElementById('adminLoginForm');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.handleAdminLogin();
+            });
+        }
+        
+        if (forgotPasswordForm) {
+            forgotPasswordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.handleForgotPassword();
+            });
+        }
+
+        // Setup password toggle
+        const passwordToggle = document.querySelector('.password-toggle');
+        if (passwordToggle) {
+            passwordToggle.addEventListener('click', this.togglePassword);
+        }
+    }
+
+    // Handle admin login
+    async handleAdminLogin() {
+        try {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            // Show loading state
+            const loginBtn = document.querySelector('.btn-login');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<div class="spinner"></div>';
+            loginBtn.disabled = true;
+
+            // Attempt login
+            try {
+                const user = await window.authManager.signIn(email, password, rememberMe);
+                
+                // Check if user is admin
+                const userRole = await window.authManager.getUserRole();
+                if (userRole === 'admin') {
+                    // Log successful admin login
+                    await logAdminAction('ADMIN_LOGIN_SUCCESS', {
+                        email: email,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    // Redirect to dashboard
+                    window.location.href = '/admin/dashboard.html';
+                } else {
+                    // User is not admin
+                    await window.authManager.signOut();
+                    utils.domUtils.showAlert('Access denied. Admin privileges required.', 'error');
+                    await logError('ADMIN_LOGIN_DENIED', {
+                        email: email,
+                        reason: 'Non-admin user attempted admin login'
+                    });
+                }
+            } catch (error) {
+                // Error is already handled by signIn method
+                await logError('ADMIN_LOGIN_FAILED', {
+                    email: email,
+                    error: error.message
+                });
+                throw error; // Re-throw to be caught by outer catch
+            }
+
+        } catch (error) {
+            console.error('Admin login error:', error);
+            utils.domUtils.showAlert('An error occurred during login. Please try again.', 'error');
+            await logError('ADMIN_LOGIN_ERROR', error);
+        } finally {
+            // Reset button state
+            const loginBtn = document.querySelector('.btn-login');
+            loginBtn.innerHTML = originalText;
+            loginBtn.disabled = false;
+        }
+    }
+
+    // Handle forgot password
+    async handleForgotPassword() {
+        try {
+            const email = document.getElementById('resetEmail').value;
+            
+            const result = await window.authManager.resetPassword(email);
+            
+            if (result.success) {
+                utils.domUtils.showAlert('Password reset link sent to your email.', 'success');
+                this.closeForgotPassword();
+            } else {
+                utils.domUtils.showAlert(result.error || 'Failed to send reset link.', 'error');
+            }
+
+        } catch (error) {
+            console.error('Forgot password error:', error);
+            utils.domUtils.showAlert('An error occurred. Please try again.', 'error');
+        }
+    }
+
+    // Toggle password visibility
+    togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleBtn = document.querySelector('.password-toggle i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleBtn.className = 'fas fa-eye-slash';
+        } else {
+            passwordInput.type = 'password';
+            toggleBtn.className = 'fas fa-eye';
+        }
+    }
+
+    // Show forgot password modal
+    showForgotPassword() {
+        const modal = document.getElementById('forgotPasswordModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    // Close forgot password modal
+    closeForgotPassword() {
+        const modal = document.getElementById('forgotPasswordModal');
+        if (modal) {
+            modal.style.display = 'none';
         }
     }
 
@@ -471,6 +611,19 @@ window.exportDashboard = async function() {
 
 window.refreshDashboard = async function() {
     return await adminManager.refreshDashboard();
+};
+
+// Global functions for login page
+window.togglePassword = function() {
+    adminManager.togglePassword();
+};
+
+window.showForgotPassword = function() {
+    adminManager.showForgotPassword();
+};
+
+window.closeForgotPassword = function() {
+    adminManager.closeForgotPassword();
 };
 
 // Add CSS for admin dashboard components
